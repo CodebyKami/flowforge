@@ -1,4 +1,7 @@
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import DashboardNav from '@/components/dashboard/nav'
 import Sidebar from '@/components/dashboard/sidebar'
 
@@ -7,9 +10,26 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  // TODO: Add authentication check
-  // const session = await getServerSession()
-  // if (!session) redirect('/login')
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Check authentication
+    const user = localStorage.getItem('user')
+    if (!user) {
+      router.push('/login')
+    } else {
+      setLoading(false)
+    }
+  }, [router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex">
