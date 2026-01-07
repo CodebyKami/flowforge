@@ -1,11 +1,27 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Bell, Search, User, Moon, Sun } from 'lucide-react'
+import { Bell, Search, User, Moon, Sun, LogOut } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 export default function DashboardNav() {
   const { theme, setTheme } = useTheme()
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      setUser(JSON.parse(userData))
+    }
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('user')
+    router.push('/login')
+  }
 
   return (
     <nav className="h-16 border-b glass flex items-center justify-between px-8">
@@ -32,8 +48,21 @@ export default function DashboardNav() {
         <Button variant="ghost" size="icon">
           <Bell className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="icon">
-          <User className="h-5 w-5" />
+        
+        {user && (
+          <div className="flex items-center space-x-3">
+            <div className="text-right">
+              <div className="text-sm font-medium">{user.name}</div>
+              <div className="text-xs text-muted-foreground">{user.email}</div>
+            </div>
+            <Button variant="ghost" size="icon">
+              <User className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
+        
+        <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
+          <LogOut className="h-5 w-5" />
         </Button>
       </div>
     </nav>
